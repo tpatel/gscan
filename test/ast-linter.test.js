@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const ASTLinter = require('../lib/ast-linter');
 const linter = new ASTLinter();
+const utils = require('./utils');
 
 function getTemplate(name) {
     return fs.readFileSync(path.join(__dirname, 'fixtures', 'ast-linter', name), {encoding: 'utf8'});
@@ -45,6 +46,22 @@ describe('ast-linter', function () {
             should(results).have.length(1);
             should(results[0].line).eql(2);
             should(results[0].column).eql(0);
+        });
+    });
+
+    describe.only('context extraction', function () {
+        before(function () {
+            template = `
+            {{#select @custom.header "minimal" desc="x"}}a{{else select @custom.header "cover" desc="y"}}b{{else select @custom.header "banner"}}c{{else}}d{{/select}}
+            {{> author}}
+            `;
+        });
+
+        it('should extract helpers correctly', function () {
+            const results = linter
+                .getContext({source: template, moduleId: 'post.hbs'});
+
+            console.log(results);
         });
     });
 });
