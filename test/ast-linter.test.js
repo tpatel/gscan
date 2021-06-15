@@ -52,16 +52,39 @@ describe('ast-linter', function () {
     describe.only('context extraction', function () {
         before(function () {
             template = `
+            {{#*inline "myPartial"}}
+                My Content
+            {{/inline}}
             {{#select @custom.header "minimal" desc="x"}}a{{else select @custom.header "cover" desc="y"}}b{{else select @custom.header "banner"}}c{{else}}d{{/select}}
             {{> author}}
+            {{#> myPartial }}
+                My Content
+            {{/myPartial}}
+            {{dash 'abc' (concat a b)}}
+            {{> author}}
+            {{#test}}{{/test}}
+            {{^baguette}}{{/baguette}}
+            {{#painau.chocolat}}{{/painau.chocolat}}
+
             `;
+            // template = `{{^hello}}{{ok}}{{/hello}}`;
         });
 
         it('should extract helpers correctly', function () {
             const results = linter
                 .getContext({source: template, moduleId: 'post.hbs'});
 
-            console.log(results);
+            console.log(JSON.stringify(results, null, 2));
+
+            // console.log(require('handlebars').precompile(template).toString());
+            // const Handlebars = require('handlebars');
+            // const t = Handlebars.compile(template);
+            // Handlebars.registerHelper('select', () => {});
+            // Handlebars.registerHelper('concat', () => {});
+            // Handlebars.registerHelper('dash', () => {});
+            // Handlebars.registerPartial('author', 'author');
+            // // Handlebars.registerHelper('hello', () => 'interesting');
+            // console.log('<',t({hellos: [{ok: 'ok'}]}),'>');
         });
     });
 });
